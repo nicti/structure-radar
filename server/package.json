@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "passport": "^0.4.1",
+    "passport-eve-oauth2": "^1.0.3",
+    "sequelize": "^6.3.5",
+    "sqlite3": "^5.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "start-watch": "nodemon index.js",
+    "cron-assets": "node cron/assets.js",
+    "cron-locations": "node cron/locations.js",
+    "cron-notifications": "node cron/notifications.js",
+    "discord": "node discord/bot.js"
+  }
+}
