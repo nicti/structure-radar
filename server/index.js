@@ -61,7 +61,7 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
     failureRedirect: process.env.FAILURE_URL
   }))
 
-  app.get('/structures',async (req, res) => {
+  app.get('/structures',authenticationCheck, async (req, res) => {
       let result = []
       let structures = await models.structure.findAll();
       for (let i = 0; i < structures.length; i++) {
@@ -91,7 +91,7 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
       res.status(200).json(result);
   })
 
-  app.get('/characters',async (req, res) => {
+  app.get('/characters',authenticationCheck, async (req, res) => {
       let user = req.user.id;
       let characters = await models.character.findAll({
           where: {
