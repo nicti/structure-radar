@@ -112,7 +112,7 @@ export default {
     }
   },
   mounted() {
-    axios.get('http://localhost:5000/structures',{withCredentials: true})
+    axios.get(process.env.VUE_APP_BE_URL+'/structures',{withCredentials: true})
     .then((response) => {
       this.items = response.data;
     })

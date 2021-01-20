@@ -119,14 +119,14 @@ export default {
             this.$vuetify.theme.dark = false;
         }
     }
-    axios.get('http://localhost:5000/',{withCredentials: true})
+    axios.get(process.env.VUE_APP_BE_URL+'/',{withCredentials: true})
     .then((response) => {
       this.userId = response.data.user.id
     })
     .catch(() => {
       this.userId = false
     })
-    axios.get('http://localhost:5000/characters',{withCredentials: true})
+    axios.get(process.env.VUE_APP_BE_URL+'/characters',{withCredentials: true})
     .then((response) => {
       this.characters = response.data;
     })
