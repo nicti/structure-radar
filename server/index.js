@@ -1,6 +1,8 @@
 require('dotenv').config()
 
 const database = require('./models')
+const https = require('https')
+const fs = require('fs')
 const express = require('express')
 
 const cors = require('cors')
@@ -124,9 +126,11 @@ const init = async () => {
 
     console.log(`Starting server on port ${PORT}...`)
 
-    app.listen(PORT, () => {
+    https.createServer({
+        pfx: fs.readFileSync('server.pem')
+    },app).listen(PORT, () => {
         console.log(`Express server started on port ${PORT}.`)
-    })
+    });
 }
 
 init()
