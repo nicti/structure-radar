@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000
 const { models } = require('./models')
 
 app.use(cors({
-    origin: 'https://localhost:8080',
+    origin: process.env.URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
 }))
