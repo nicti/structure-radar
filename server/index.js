@@ -127,7 +127,8 @@ const init = async () => {
     console.log(`Starting server on port ${PORT}...`)
 
     https.createServer({
-        pfx: fs.readFileSync('server.pem')
+        key: fs.readFileSync('server.pem'),
+        cert: fs.readFileSync('server.pem')
     },app).listen(PORT, () => {
         console.log(`Express server started on port ${PORT}.`)
     });
