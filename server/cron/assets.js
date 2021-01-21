@@ -41,6 +41,10 @@ async function requestAssets(id, access, refresh, page=1) {
                     Authorization: 'Bearer '+character.accessToken
                 }
             });
+        } else if(error.response.status == 500) {
+            if (error.response.data.error.includes('Requested page does not exist')) {
+                return false;
+            }
         }
     }
     return assets.data;
@@ -55,9 +59,11 @@ async function process() {
         let page = 1;
         do {
             assets = await requestAssets(element.id,element.accessToken,element.refreshToken, page);
-            totalAssets = totalAssets.concat(assets);
-            page++;
-        } while (assets.length === 1000)
+            if (assets.length) {
+                totalAssets = totalAssets.concat(assets);
+                page++;
+            }
+        } while (assets.length)
         let locations = [];
         for (let j = 0; j < totalAssets.length; j++) {
             const asset = totalAssets[j];

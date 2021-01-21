@@ -99,7 +99,8 @@ export default {
     loginUrl: process.env.VUE_APP_AUTH_URL,
     userId: false,
     characters: [],
-    drawer: false
+    drawer: false,
+    beUrl: process.env.VUE_APP_BE_URL
     }),
   methods: {
     toggle_dark_mode: function () {
@@ -119,14 +120,14 @@ export default {
             this.$vuetify.theme.dark = false;
         }
     }
-    axios.get(process.env.VUE_APP_BE_URL+'/',{withCredentials: true})
+    axios.get(this.beUrl+'/',{withCredentials: true})
     .then((response) => {
       this.userId = response.data.user.id
     })
     .catch(() => {
       this.userId = false
     })
-    axios.get(process.env.VUE_APP_BE_URL+'/characters',{withCredentials: true})
+    axios.get(this.beUrl+'/characters',{withCredentials: true})
     .then((response) => {
       this.characters = response.data;
     })

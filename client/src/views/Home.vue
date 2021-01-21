@@ -65,6 +65,7 @@ export default {
   data() {
     return {
       searchStructure: '',
+      beUrl: process.env.VUE_APP_BE_URL,
       items: [],
       headers: [
         {
@@ -112,7 +113,7 @@ export default {
     }
   },
   mounted() {
-    axios.get(process.env.VUE_APP_BE_URL+'/structures',{withCredentials: true})
+    axios.get(this.beUrl+'/structures',{withCredentials: true})
     .then((response) => {
       this.items = response.data;
     })
