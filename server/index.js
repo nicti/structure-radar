@@ -42,7 +42,7 @@ const authenticationCheck = (req, res, next) => {
             authenticated: false,
             message: 'Not authenticated'
         })
-    } else if(!process.env.ALLOWED.split(',').includes(req.user.id)) {
+    } else if(!process.env.ALLOWED.split(',').includes(req.user.id.toString())) {
         res.status(401).json({
             authenticated: false,
             message: 'Unauthorized'

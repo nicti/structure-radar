@@ -32,7 +32,7 @@ passport.use(new EVEStrategy({
   scope: 'esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-characters.read_notifications.v1'
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
-    if (!process.env.ALLOWED.split(',').includes(profile.CharacterID)) {
+    if (!process.env.ALLOWED.split(',').includes(profile.CharacterID.toString())) {
       done(null,null);
     }
     let character, user
