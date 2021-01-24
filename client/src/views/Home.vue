@@ -83,7 +83,8 @@ export default {
         {
           text: 'Type',
           value: 'type_id',
-          groupable: false
+          groupable: false,
+          sortable: false
         },
         {
           text: 'Name',
@@ -94,7 +95,8 @@ export default {
         {
           text: 'Owner',
           value: 'owner',
-          groupable: false
+          groupable: false,
+          sortable: false
         },
         {
           text: 'Asset Owners',

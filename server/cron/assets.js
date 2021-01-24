@@ -36,11 +36,19 @@ async function requestAssets(id, access, refresh, page=1) {
                 accessToken: refreshRequest.data.access_token,
                 refreshToken: refreshRequest.data.refresh_token
             });
-            assets = await esi.get('/v5/characters/'+id+'/assets/?page='+page,{
-                headers: {
-                    Authorization: 'Bearer '+character.accessToken
+            try {
+                assets = await esi.get('/v5/characters/'+id+'/assets/?page='+page,{
+                    headers: {
+                        Authorization: 'Bearer '+character.accessToken
+                    }
+                });
+            } catch (errorTwo) {
+                if (errorTwo.response.status == 500) {
+                    if (error.response.data.error.includes('Requested page does not exist')){
+                        return false;
+                    }
                 }
-            });
+            }
         } else if(error.response.status == 500) {
             if (error.response.data.error.includes('Requested page does not exist')) {
                 return false;
