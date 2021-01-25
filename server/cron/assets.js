@@ -44,7 +44,7 @@ async function requestAssets(id, access, refresh, page=1) {
                 });
             } catch (errorTwo) {
                 if (errorTwo.response.status == 500) {
-                    if (error.response.data.error.includes('Requested page does not exist')){
+                    if (errorTwo.response.data.error.includes('Requested page does not exist')){
                         return false;
                     }
                 }
