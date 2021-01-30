@@ -29,7 +29,7 @@ passport.use(new EVEStrategy({
   callbackURL: process.env.ESI_CALLBACK_URL,
   state: Math.random().toString(36).substring(7),
   passReqToCallback: true,
-  scope: 'esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-characters.read_notifications.v1'
+  scope: 'esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-characters.read_notifications.v1 esi-search.search_structures.v1'
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
     if (!process.env.ALLOWED.split(',').includes(profile.CharacterID.toString())) {
