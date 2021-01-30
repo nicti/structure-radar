@@ -20,7 +20,7 @@ const typeMap = {
     35841: 'Ansiblex Jump Gate',
     37534: 'Tenebrex Cyno Jammer',
     35840: 'Pharolux Cyno Beacon',
-    47513: "Draccous' Fortizar",
+    47513: "'Draccous' Fortizar",
     47514: "'Horizon' Fortizar",
     47515: "'Marginis' Fortizar",
     47516: "'Prometheus' Fortizar",
@@ -162,7 +162,12 @@ client.on('message',async (message) => {
                     let result = await searchStructures(character.id,character.accessToken,character.refreshToken,search);
                     structureList = {...structureList, ...result};
                 }
-                message.channel.send('Following structures were found:```'+Object.values(structureList).sort().join("\n")+'```');
+                let renderList = Object.values(structureList).sort();
+                if (renderList.length) {
+                    message.channel.send('Following structures were found:```'+renderList.join("\n")+'```');
+                } else {
+                    message.channel.send('No structures found for `'+search+'`');
+                }
                 message.channel.stopTyping();
                 break;
             default:
