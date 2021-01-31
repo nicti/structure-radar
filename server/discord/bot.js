@@ -106,6 +106,8 @@ async function searchStructures(id, access, refresh, search) {
                         Authorization: 'Bearer '+character.accessToken
                     }
                 });
+            } else {
+                throw error;
             }
         }
         structureData = structureData.data;
@@ -159,8 +161,12 @@ client.on('message',async (message) => {
                 let search = fullCommand.split(' ')[1];
                 for (let i = 0; i < characters.length; i++) {
                     const character = characters[i];
-                    let result = await searchStructures(character.id,character.accessToken,character.refreshToken,search);
-                    structureList = {...structureList, ...result};
+                    try {
+                        let result = await searchStructures(character.id,character.accessToken,character.refreshToken,search);
+                        structureList = {...structureList, ...result};
+                    } catch (error) {
+                        message.channel.send('Failed to process search for character '+character.name+':```'+error+'```');
+                    }
                 }
                 let renderList = Object.values(structureList).sort();
                 if (renderList.length) {
