@@ -27,7 +27,24 @@ const typeMap = {
     47512: "'Moreau' Fortizar"
 };
 
-async function searchStructures(id, access, refresh, search) {
+const tickerCache = {};
+
+async function getTicker(id) {
+    if (!tickerCache[id]) {
+        let corp = await esi.get('/v4/corporations/'+id+'/');
+        corp = corp.data;
+        let ticker = '<'+corp.ticker+'>';
+        if (corp.alliance_id) {
+            let alli = await esi.get('/v4/alliances/'+corp.alliance_id+'/');
+            alli = alli.data;
+            ticker = ticker + '['+alli.ticker+']';
+        }
+    tickerCache[id] = ticker;
+    }
+    return tickerCache[id];
+}
+
+async function searchStructures(id, access, refresh, search, owner = false) {
     let structureList = {};
     let structures;
     try {
@@ -111,7 +128,11 @@ async function searchStructures(id, access, refresh, search) {
             }
         }
         structureData = structureData.data;
-        structureList[structureId] = structureData.name+' ('+typeMap[structureData.type_id]+')';
+        let ticker = '';
+        if (owner) {
+            ticker = await getTicker(structureData.owner_id);
+        }
+        structureList[structureId] = structureData.name+' ('+typeMap[structureData.type_id]+')'+ticker;
     }
     return structureList;
 }
@@ -162,7 +183,7 @@ client.on('message',async (message) => {
                 for (let i = 0; i < characters.length; i++) {
                     const character = characters[i];
                     try {
-                        let result = await searchStructures(character.id,character.accessToken,character.refreshToken,search);
+                        let result = await searchStructures(character.id,character.accessToken,character.refreshToken,search,fullCommand.split(' ').includes('--owner'));
                         structureList = {...structureList, ...result};
                     } catch (error) {
                         message.channel.send('Failed to process search for character '+character.name+':```'+error+'```');
