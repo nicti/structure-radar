@@ -14,7 +14,10 @@ async function requestAssets(id, access, refresh, page=1) {
                 Authorization: 'Bearer '+access
             }
         });
-        return assets.data;
+        return {
+            assets: assets.data,
+            pages: assets.headers['x-pages']
+        };
     } catch (error) {
         // Access token expired, refresh
         if (error.response.status == 403) {
@@ -43,7 +46,10 @@ async function requestAssets(id, access, refresh, page=1) {
                         Authorization: 'Bearer '+character.accessToken
                     }
                 });
-                return assets.data;
+                return {
+                    assets: assets.data,
+                    pages: assets.headers['x-pages']
+                };
             } catch (errorTwo) {
                 if (errorTwo.response.status == 500) {
                     if (errorTwo.response.data.error.includes('Requested page does not exist')){
@@ -68,17 +74,19 @@ async function process() {
         let totalAssets = [];
         let assets;
         let page = 1;
+        let maxPage = 2;
         do {
             try {
-                assets = await requestAssets(element.id,element.accessToken,element.refreshToken, page);
+                assetsObject = await requestAssets(element.id,element.accessToken,element.refreshToken, page);
             } catch (error) {
                 console.log(error);
             }
-            if (assets.length) {
-                totalAssets = totalAssets.concat(assets);
+            if (assetsObject.assets.length) {
+                totalAssets = totalAssets.concat(assetsObject.assets);
+                maxPage = assetsObject.pages;
                 page++;
             }
-        } while (assets.length)
+        } while (page < maxPage)
         let locations = [];
         for (let j = 0; j < totalAssets.length; j++) {
             const asset = totalAssets[j];
