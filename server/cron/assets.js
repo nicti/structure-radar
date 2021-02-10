@@ -13,7 +13,8 @@ async function requestAssets(id, access, refresh, page=1) {
             headers: {
                 Authorization: 'Bearer '+access
             }
-        })
+        });
+        return assets.data;
     } catch (error) {
         // Access token expired, refresh
         if (error.response.status == 403) {
@@ -42,20 +43,22 @@ async function requestAssets(id, access, refresh, page=1) {
                         Authorization: 'Bearer '+character.accessToken
                     }
                 });
+                return assets.data;
             } catch (errorTwo) {
                 if (errorTwo.response.status == 500) {
                     if (errorTwo.response.data.error.includes('Requested page does not exist')){
                         return false;
                     }
                 }
+                throw errorTwo;
             }
         } else if(error.response.status == 500) {
             if (error.response.data.error.includes('Requested page does not exist')) {
                 return false;
             }
         }
+        throw error;
     }
-    return assets.data;
 }
 
 async function process() {
@@ -66,7 +69,11 @@ async function process() {
         let assets;
         let page = 1;
         do {
-            assets = await requestAssets(element.id,element.accessToken,element.refreshToken, page);
+            try {
+                assets = await requestAssets(element.id,element.accessToken,element.refreshToken, page);
+            } catch (error) {
+                console.log(error);
+            }
             if (assets.length) {
                 totalAssets = totalAssets.concat(assets);
                 page++;
