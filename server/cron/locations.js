@@ -43,7 +43,11 @@ async function requestStructure(id, location_id, access, refresh) {
             });
         }
     }
-    return structures.data;
+    if (typeof structures.data !== 'undefined') {
+        return structures.data;
+    } else {
+        return null;
+    }
 }
 
 async function process() {
@@ -82,7 +86,13 @@ async function process() {
                             corp: corp.toString(),
                             alli: alli.toString()
                         });
+                        break;
                     } catch (error) {
+                        if (typeof error.response !== 'undefined') {
+                            console.log('Requesting '+structure.location_id+' for character '+character.name+' returned '+error.response.status)
+                        } else {
+                            console.log(error);
+                        }
                         continue;
                     }
                     
