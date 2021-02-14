@@ -5,17 +5,29 @@ const axios = require('axios');
 const esi = axios.create({
     baseURL: 'https://esi.evetech.net',
 });
+let esiErrorLimit = 100
+let esiErrorReset = 60
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 async function requestStructure(id, location_id, access, refresh) {
+    if (esiErrorLimit <= 5) {
+        await sleep((esiErrorReset*1000));
+    }
     let structures;
     try {
         structures = await esi.get('/v2/universe/structures/'+location_id+'/',{
             headers: {
                 Authorization: 'Bearer '+access
             }
-        })
+        });
+        esiErrorLimit = parseInt(structures.response.headers["x-esi-error-limit-remain"]);
+        esiErrorReset = parseInt(structures.response.headers["x-esi-error-limit-reset"]);
         return structures.data;
     } catch (error) {
+        esiErrorLimit = parseInt(error.response.headers["x-esi-error-limit-remain"]);
         // Access token expired, refresh
         if (error.response.status == 403) {
             let refreshRequest = await esi.post('https://login.eveonline.com/v2/oauth/token',
@@ -43,8 +55,12 @@ async function requestStructure(id, location_id, access, refresh) {
                         Authorization: 'Bearer '+character.accessToken
                     }
                 });
+                esiErrorLimit = parseInt(structures.response.headers["x-esi-error-limit-remain"]);
+                esiErrorReset = parseInt(structures.response.headers["x-esi-error-limit-reset"]);
                 return structures.data;
             } catch (error) {
+                esiErrorLimit = parseInt(error.response.headers["x-esi-error-limit-remain"]);
+                esiErrorReset = parseInt(error.response.headers["x-esi-error-limit-reset"]);
                 throw error;
             }
         } else {
