@@ -137,6 +137,52 @@ async function searchStructures(id, access, refresh, search, owner = false) {
     return structureList;
 }
 
+function getCountById(structuresByType, id) {
+    let i,d;
+    i = structuresByType.findIndex((element) => element.type_id === id);
+    if (i === -1) {
+        return 0;
+    }
+    d = structuresByType[i];
+    structuresByType.splice(i,1);
+    if (typeof d === 'undefined') {
+        return 0;
+    }
+    return d.count;
+}
+
+function transformDbToOutput(structuresByType) {
+    let unknownCount = getCountById(structuresByType, '');
+    let astrahusCount = getCountById(structuresByType, '35832');
+    let fortizarCount = getCountById(structuresByType, '35833');
+    let keepstarCount = getCountById(structuresByType, '35834');
+    let raitaruCount = getCountById(structuresByType, '35825');
+    let azbelCount = getCountById(structuresByType, '35826');
+    let sotiyoCount = getCountById(structuresByType, '35827');
+    let athanorCount = getCountById(structuresByType, '35835');
+    let tataraCount = getCountById(structuresByType, '35836');
+    let ansiblexCount = getCountById(structuresByType, '35841');
+    let tenebrexCount = getCountById(structuresByType, '37534');
+    let pharoluxCount = getCountById(structuresByType, '35840');
+    let draccousCount = getCountById(structuresByType, '47513');
+    let horizonCount = getCountById(structuresByType, '47514');
+    let marginisCount = getCountById(structuresByType, '47515');
+    let prometheusCount = getCountById(structuresByType, '47516');
+    let moreauCount = getCountById(structuresByType, '47512');
+    let otherCount = 0;
+    for (let i = 0; i < structuresByType.length; i++) {
+        const element = structuresByType[i];
+        otherCount = otherCount + parseInt(element.count);
+    }
+    let text = ''+
+                '```Astrahus: '+astrahusCount+'\nFortizar: '+fortizarCount+'\nKeepstar: '+keepstarCount+'```'+
+                '```Draccous: '+draccousCount+'\nHorizon:  '+horizonCount+'\nMarginis: '+marginisCount+'\nMoreau:   '+moreauCount+'\nPromethe: '+prometheusCount+'```'+
+                '```Raitaru:  '+raitaruCount+'\nAzbel:    '+azbelCount+'\nSotiyo:   '+sotiyoCount+'```'+
+                '```Athanor:  '+athanorCount+'\nTatara:   '+tataraCount+'```'+
+                '```Unknown:  '+unknownCount+'\nOthers:   '+otherCount+'```';
+    return text;
+}
+
 client.on('message',async (message) => {
     //Request is pointing at this bot
     let characters;
@@ -147,17 +193,14 @@ client.on('message',async (message) => {
             case 'status':
                 characters = await models.character.findAndCountAll();
                 let structures = await models.structure.findAndCountAll();
-                let unanchoring = ''+
-                '```Astrahus: 0\nFortizar: 0\nKeepstar: 0```'+
-                '```Draccous: 0\nHorizon:  0\nMarginis: 0\nMoreau:   0\nPromethe: 0```'+
-                '```Raitaru:  0\nAzbel:    0\nSotiyo:   0```'+
-                '```Athanor:  0\nTatara:   0\n```';
+                let structuresByType = (await models.structure.findAndCountAll({group: ['type_id']})).count;
+                let text = transformDbToOutput(structuresByType);
                 let embed = new Discord.MessageEmbed()
                 .setTitle('Status')
                 .addFields(
                     {name: 'Characters', value: characters.count, inline: true},
                     {name: 'Tracked structures', value: structures.count, inline: true},
-                    {name: 'Unanchoring', value: unanchoring}
+                    {name: 'Details', value: text}
                 )
                 ;
                 message.channel.send(embed);
