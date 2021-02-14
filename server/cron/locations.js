@@ -14,6 +14,7 @@ async function requestStructure(id, location_id, access, refresh) {
                 Authorization: 'Bearer '+access
             }
         })
+        return structures.data;
     } catch (error) {
         // Access token expired, refresh
         if (error.response.status == 403) {
@@ -36,17 +37,19 @@ async function requestStructure(id, location_id, access, refresh) {
                 accessToken: refreshRequest.data.access_token,
                 refreshToken: refreshRequest.data.refresh_token
             });
-            structures = await esi.get('/v2/universe/structures/'+location_id+'/',{
-                headers: {
-                    Authorization: 'Bearer '+character.accessToken
-                }
-            });
+            try {
+                structures = await esi.get('/v2/universe/structures/'+location_id+'/',{
+                    headers: {
+                        Authorization: 'Bearer '+character.accessToken
+                    }
+                });
+                return structures.data;
+            } catch (error) {
+                throw error;
+            }
+        } else {
+            throw error;
         }
-    }
-    if (typeof structures.data !== 'undefined') {
-        return structures.data;
-    } else {
-        return null;
     }
 }
 
