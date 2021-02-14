@@ -23,8 +23,8 @@ async function requestStructure(id, location_id, access, refresh) {
                 Authorization: 'Bearer '+access
             }
         });
-        esiErrorLimit = parseInt(structures.response.headers["x-esi-error-limit-remain"]);
-        esiErrorReset = parseInt(structures.response.headers["x-esi-error-limit-reset"]);
+        esiErrorLimit = parseInt(structures.headers["x-esi-error-limit-remain"]);
+        esiErrorReset = parseInt(structures.headers["x-esi-error-limit-reset"]);
         return structures.data;
     } catch (error) {
         esiErrorLimit = parseInt(error.response.headers["x-esi-error-limit-remain"]);
@@ -56,8 +56,8 @@ async function requestStructure(id, location_id, access, refresh) {
                         Authorization: 'Bearer '+character.accessToken
                     }
                 });
-                esiErrorLimit = parseInt(structures.response.headers["x-esi-error-limit-remain"]);
-                esiErrorReset = parseInt(structures.response.headers["x-esi-error-limit-reset"]);
+                esiErrorLimit = parseInt(structures.headers["x-esi-error-limit-remain"]);
+                esiErrorReset = parseInt(structures.headers["x-esi-error-limit-reset"]);
                 return structures.data;
             } catch (error) {
                 esiErrorLimit = parseInt(error.response.headers["x-esi-error-limit-remain"]);
