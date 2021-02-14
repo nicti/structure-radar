@@ -28,6 +28,7 @@ async function requestStructure(id, location_id, access, refresh) {
         return structures.data;
     } catch (error) {
         esiErrorLimit = parseInt(error.response.headers["x-esi-error-limit-remain"]);
+        esiErrorReset = parseInt(error.response.headers["x-esi-error-limit-reset"]);
         // Access token expired, refresh
         if (error.response.status == 403) {
             let refreshRequest = await esi.post('https://login.eveonline.com/v2/oauth/token',
