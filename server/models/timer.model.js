@@ -1,11 +1,23 @@
 const DataTypes = require('sequelize')
 
 module.exports = (sequelize) => {
-    sequelize.define('structure',{
-        location_id: {
+    sequelize.define('timer',{
+        notification_id: {
             type: DataTypes.STRING
         },
         character_id: {
+            type: DataTypes.STRING
+        },
+        location_id: {
+            type: DataTypes.STRING
+        },
+        location_name: {
+            type: DataTypes.STRING
+        },
+        type_id: {
+            type: DataTypes.STRING
+        },
+        timer: {
             type: DataTypes.STRING
         },
         system: {
@@ -14,20 +26,11 @@ module.exports = (sequelize) => {
         region: {
             type: DataTypes.STRING
         },
-        type_id: {
+        posted_at: {
             type: DataTypes.STRING
         },
-        name: {
+        expires_at: {
             type: DataTypes.STRING
-        },
-        corp: {
-            type: DataTypes.STRING
-        },
-        alli: {
-            type: DataTypes.STRING
-        },
-        vulnerability: {
-            type: DataTypes.STRING
-        },
-      });
+        }
+    })
 }

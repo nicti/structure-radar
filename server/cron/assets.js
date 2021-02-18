@@ -115,6 +115,7 @@ async function process() {
             } else {
                 let name = '';
                 let system = '';
+                let region = '';
                 let corp = '';
                 let alli = '';
                 let type_id = '';
@@ -124,6 +125,9 @@ async function process() {
                     type_id = station.data.type_id;
                     let systemData = await esi.get('/v4/universe/systems/'+station.data.system_id+'/');
                     system = systemData.data.name;
+                    let constData = await esi.get('/v1/universe/constellations/'+systemData.data.constellation_id+'/');
+                    let regionData = await esi.get('/v1/universe/regions/'+constData.data.region_id+'/');
+                    region = regionData.data.name;
                     let corporation = await esi.get('/v4/corporations/'+station.data.owner+'/');
                     corp = corporation.data.name;
                     if (corporation.data.alliance_id) {
@@ -135,6 +139,7 @@ async function process() {
                     location_id: location.toString(),
                     character_id: element.id.toString(),
                     system: system.toString(),
+                    region: region.toString(),
                     type_id: type_id.toString(),
                     name: name.toString(),
                     corp: corp.toString(),

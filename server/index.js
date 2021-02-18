@@ -81,11 +81,11 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
             result.push({
                 location_id: structure.location_id,
                 system: structure.system,
+                region: structure.region,
                 type_id: structure.type_id,
                 name: structure.name,
                 corp: structure.corp,
                 alli: structure.alli,
-                asset_owner: [character.name],
                 vulnerability: structure.vulnerability
             });
           } else {
@@ -95,6 +95,31 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
       }
       res.status(200).json(result);
   })
+
+  app.get('/timers',authenticationCheck, async (req, res) => {
+      let result = [];
+      let timers = await models.timer.findAll();
+      for (let i = 0; i < timers.length; i++) {
+          const timer = timers[i];
+          let timerExpires = new Date(timer.expires_at+' UTC');
+          let date = new Date();
+          date.setUTCDate(date.getUTCDate()-2);
+          if (timerExpires.getTime() <= date.getTime()) {
+              continue;
+          }
+          result.push({
+              location_id: timer.location_id,
+              name: timer.location_name,
+              type_id: timer.type_id,
+              system: timer.system,
+              region: timer.region,
+              timer: timer.timer,
+              posted: timer.posted_at,
+              expires: timer.expires_at
+          });
+      }
+      res.status(200).json(result);
+  });
 
   app.get('/characters',authenticationCheck, async (req, res) => {
       let user = req.user.id;

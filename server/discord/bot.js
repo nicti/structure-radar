@@ -201,8 +201,7 @@ client.on('message',async (message) => {
                     {name: 'Characters', value: characters.count, inline: true},
                     {name: 'Tracked structures', value: structures.count, inline: true},
                     {name: 'Details', value: text}
-                )
-                ;
+                );
                 message.channel.send(embed);
                 break;
             case 'setup':

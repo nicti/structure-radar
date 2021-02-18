@@ -10,6 +10,7 @@ require('./user.model')(sequelize)
 require('./character.model')(sequelize)
 require('./structure.model')(sequelize)
 require('./location.model')(sequelize)
+require('./timer.model')(sequelize)
 
 const { user,character } = sequelize.models
 

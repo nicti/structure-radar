@@ -10,6 +10,9 @@ module.exports = (sequelize) => {
         system: {
             type: DataTypes.STRING
         },
+        region: {
+            type: DataTypes.STRING
+        },
         type_id: {
             type: DataTypes.STRING
         },

@@ -84,6 +84,9 @@ async function process() {
                         let result = await requestStructure(character.id,structure.location_id,character.accessToken,character.refreshToken);
                         let systemInfo = await esi.get('/v4/universe/systems/'+result.solar_system_id+'/');
                         let system = systemInfo.data.name;
+                        let constData = await esi.get('/v1/universe/constellations/'+systemInfo.data.constellation_id+'/');
+                        let regionData = await esi.get('/v1/universe/regions/'+constData.data.region_id+'/');
+                        let region = regionData.data.name;
                         let corpInfo = await esi.get('/v4/corporations/'+result.owner_id+'/');
                         let corp = corpInfo.data.ticker;
                         let alli = '';
@@ -94,6 +97,7 @@ async function process() {
                         await models.location.create({
                             location_id: structure.location_id.toString(),
                             system: system.toString(),
+                            region: region.toString(),
                             type_id: result.type_id.toString(),
                             name: result.name.toString(),
                             corp: corp.toString(),
@@ -101,6 +105,7 @@ async function process() {
                         })
                         structure.update({
                             system: system.toString(),
+                            region: region.toString(),
                             type_id: result.type_id.toString(),
                             name: result.name.toString(),
                             corp: corp.toString(),
