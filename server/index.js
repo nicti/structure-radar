@@ -88,10 +88,7 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
                 alli: structure.alli,
                 vulnerability: structure.vulnerability
             });
-          } else {
-              result[j].asset_owner.push(character.name);
-              let a = 'b';
-          }        
+          }
       }
       res.status(200).json(result);
   })
