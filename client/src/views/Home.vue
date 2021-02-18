@@ -54,7 +54,7 @@
                 ></v-img>
               </template>
               <template v-slot:item.countdown="{ item }">
-                <p class="countdown" :target="item.expires"></p>
+                <div class="countdown" :target="item.expires"></div>
               </template>
               </v-data-table>
             </v-col>
@@ -151,11 +151,11 @@ export default {
           value: 'posted'
         },
         {
-          text: 'Expires',
+          text: 'Expected at',
           value: 'expires'
         },
         {
-          text: 'Expires in',
+          text: 'Expected in',
           value: 'countdown',
           sortable: false
         }
