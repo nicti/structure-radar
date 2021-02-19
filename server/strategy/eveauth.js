@@ -41,7 +41,8 @@ passport.use(new EVEStrategy({
         where: {
           userId: req.user.id,
           id: profile.CharacterID,
-          name: profile.CharacterName
+          name: profile.CharacterName,
+          spy: false
         },
         defaults: {
           accessToken: accessToken,
@@ -65,7 +66,8 @@ passport.use(new EVEStrategy({
           id: profile.CharacterID,
           name: profile.CharacterName,
           accessToken: accessToken,
-          refreshToken: refreshToken
+          refreshToken: refreshToken,
+          spy: false
       })
       }
       user = user[0]

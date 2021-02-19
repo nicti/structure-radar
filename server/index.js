@@ -4,6 +4,7 @@ const database = require('./models')
 const https = require('https')
 const fs = require('fs')
 const express = require('express')
+const bodyParse = require('body-parser')
 
 const cors = require('cors')
 const cookieSession = require('cookie-session')
@@ -31,6 +32,7 @@ app.use(cookieSession({
 }))
 
 app.use(cookieParser())
+app.use(bodyParse.json())
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -59,7 +61,13 @@ app.get('/', authenticationCheck, (req, res) => {
     })
 })
 
-app.get('/auth', passport.authenticate('eveOnline'))
+app.get('/auth', (req, res, next) => {
+    if (req.user) {
+        passport.authenticate('eveOnline')(req, res, next)
+    } else {
+        passport.authenticate('eveOnline',{scope: 'publicData'})(req, res, next)
+    }
+})
 app.get('/auth/callback', passport.authenticate('eveOnline',
   {
     successRedirect: process.env.URL,
@@ -91,6 +99,17 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
           }
       }
       res.status(200).json(result);
+  })
+
+  app.post('/character/:id/spy',authenticationCheck, async (req, res) => {
+      id = req.params.id;
+      let char = await models.character.findOne({where: {
+          userId: req.user.id,
+          id: id
+      }});
+      char.spy = req.body.spy;
+      char.save();
+      res.status(200).send();
   })
 
   app.get('/timers',authenticationCheck, async (req, res) => {
@@ -130,7 +149,8 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
           const character = characters[i];
           list.push({
               character_id: character.id,
-              character_name: character.name
+              character_name: character.name,
+              spy: character.spy
           })
       }
       res.status(200).json(list);

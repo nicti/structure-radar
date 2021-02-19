@@ -20,6 +20,10 @@ module.exports = (sequelize) => {
     refreshToken: {
       allowNull: false,
       type: DataTypes.STRING
+    },
+    spy: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN
     }
   })
 }

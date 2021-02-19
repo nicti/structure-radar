@@ -46,6 +46,12 @@
                 :search="searchTimer"
                 :sort-by.sync="timerSort"
               >
+              <template v-slot:item.system="{ item }">
+                <a :href="getEvemapsUrl(item.region,item.system)" target="_blank">{{item.system}}</a>
+              </template>
+              <template v-slot:item.region="{ item }">
+                <a :href="getEvemapsUrl(item.region)" target="_blank">{{item.region}}</a>
+              </template>
               <template v-slot:item.type_id="{ item }">
                 <v-img
                 :src="getTypeRender(item.type_id)"
@@ -85,6 +91,12 @@
                 :items="items"
                 :search="searchStructure"
               >
+              <template v-slot:item.system="{ item }">
+                <a :href="getEvemapsUrl(item.region,item.system)" target="_blank">{{item.system}}</a>
+              </template>
+              <template v-slot:item.region="{ item }">
+                <a :href="getEvemapsUrl(item.region)" target="_blank">{{item.region}}</a>
+              </template>
               <template v-slot:item.type_id="{ item }">
                 <v-img
                 :src="getTypeRender(item.type_id)"
@@ -252,6 +264,12 @@ export default {
         const countdown = countdowns[i];
         countdown.innerHTML = this.dateToCountdownStr(countdown.getAttribute('target'));
       }
+    },
+    getEvemapsUrl(region, system=null) {
+      if (system === null) {
+        return 'https://evemaps.dotlan.net/map/'+region;
+      }
+      return 'https://evemaps.dotlan.net/map/'+region+'/'+system;
     }
   }
 }

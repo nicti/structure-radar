@@ -69,13 +69,14 @@
       <v-list-item v-for="item in characters" :key="item.character_id">
         <v-img
           :src="getCharacterImage(item.character_id)"
-          max-height="32"
-          max-width="32"
+          max-height="48"
+          max-width="48"
           class="mr-1"
         ></v-img>
         
         <v-list-item-content>
             <v-list-item-title>{{ item.character_name }}</v-list-item-title>
+            <v-checkbox dense class="mt-0 ml-2" :label="`Spy`" @change="characterSpy($event, item.character_id)" v-model="item.spy"></v-checkbox>
           </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -100,7 +101,8 @@ export default {
     userId: false,
     characters: [],
     drawer: false,
-    beUrl: process.env.VUE_APP_BE_URL
+    beUrl: process.env.VUE_APP_BE_URL,
+    spyVal: {}
     }),
   methods: {
     toggle_dark_mode: function () {
@@ -109,6 +111,12 @@ export default {
     },
     getCharacterImage(id) {
       return 'https://images.evetech.net/characters/'+id+'/portrait?size=64'
+    },
+    characterSpy(newVal, id) {
+      axios.post(this.beUrl+'/character/'+id+'/spy',{spy: newVal},{withCredentials: true});
+    },
+    getSpyVal(val) {
+      console.log(val);
     }
   },
   mounted() {

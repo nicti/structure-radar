@@ -130,7 +130,13 @@ async function process() {
                     {name: 'System', value: system.data.name, inline: true },
                     {name: 'Region', value:region.data.name, inline: true }
                 );
-                await channel.send({content: 'New timer detected by ['+character.name+']:', embed: embed});
+                let charName;
+                if (character.spy) {
+                    charName = '*Retracted*'
+                } else {
+                    charName = character.name
+                }
+                await channel.send({content: 'New timer detected by ['+charName+']:', embed: embed});
             }
         }
     }
