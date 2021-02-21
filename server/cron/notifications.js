@@ -68,7 +68,15 @@ async function requestNotifications(id, access, refresh) {
 }
 
 async function process() {
-    const channel = client.channels.cache.find(channel => channel.id == dotenv.REPORT_CHANNEL);
+    const channels = client.channels.cache.filter(channel => dotenv.REPORT_CHANNEL.split(',').includes(channel.id));
+    let reportChannels = [];
+    channels.forEach((ch, key) => {
+        let obj = {};
+        obj['channel'] = ch;
+        let notifyRole = ch.guild.roles.cache.find(role => role.name === dotenv.MENTION_ROLE);
+        obj['notify'] = notifyRole;
+        reportChannels.push(obj);
+    });
     let characters = await models.character.findAll();
     for (let i = 0; i < characters.length; i++) {
         const character = characters[i];
@@ -154,7 +162,10 @@ async function process() {
                     } else {
                         charName = character.name
                     }
-                    await channel.send({content: 'New timer detected by ['+charName+']:', embed: embed});
+                    for (let z = 0; z < reportChannels.length; z++) {
+                        const reportChannel = reportChannels[z];
+                        await reportChannel.channel.send({content: 'New timer detected by ['+charName+']:', embed: embed});
+                    }
                     break;
 
                 case 'StructureItemsMovedToSafety':
@@ -207,7 +218,10 @@ async function process() {
                     } else {
                         charName = character.name
                     }
-                    await channel.send({content: 'New event detected by ['+charName+']:', embed: embed});
+                    for (let z = 0; z < reportChannels.length; z++) {
+                        const reportChannel = reportChannels[z];
+                        await reportChannel.channel.send({content: '<@&'+reportChannel.notify.id+'> New event detected by ['+charName+']:', embed: embed});
+                    }
                     break;
 
                 default:
