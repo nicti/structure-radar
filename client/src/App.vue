@@ -47,7 +47,7 @@
       <v-btn
         :href="loginUrl"
         text
-        v-if="userId"
+        v-if="accessLevel === 3"
       >
         <span class="mr-2">Add...</span>
       </v-btn>
@@ -58,6 +58,7 @@
       absolute
       temporary
       right
+      v-if="accessLevel >= 3"
     >
     <v-list
       nav
@@ -102,7 +103,7 @@ export default {
     characters: [],
     drawer: false,
     beUrl: process.env.VUE_APP_BE_URL,
-    spyVal: {}
+    accessLevel: 0
     }),
   methods: {
     toggle_dark_mode: function () {
@@ -114,9 +115,6 @@ export default {
     },
     characterSpy(newVal, id) {
       axios.post(this.beUrl+'/character/'+id+'/spy',{spy: newVal},{withCredentials: true});
-    },
-    getSpyVal(val) {
-      console.log(val);
     }
   },
   mounted() {
@@ -131,8 +129,12 @@ export default {
     axios.get(this.beUrl+'/',{withCredentials: true})
     .then((response) => {
       this.userId = response.data.user.id
+      axios.get(this.beUrl+'/allowed/'+this.userId,{withCredentials: true}).then((response) => {
+        this.accessLevel = response.data.level;
+      });
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error)
       this.userId = false
     })
     axios.get(this.beUrl+'/characters',{withCredentials: true})

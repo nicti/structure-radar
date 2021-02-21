@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row class="text-center" v-if="!this.$parent.$parent.$parent.userId">
+    <v-row class="text-center" v-if="this.$parent.$parent.$parent.accessLevel == 0">
       <v-col cols="12">
         <v-img
           :src="require('../assets/fyn.png')"
@@ -16,9 +16,28 @@
         </h1>
       </v-col>
     </v-row>
-    <div v-if="this.$parent.$parent.$parent.userId">
+    <v-row v-if="this.$parent.$parent.$parent.accessLevel == 1">
+      <v-spacer></v-spacer>
+      <v-col cols="4">
+        <v-img
+          :src="require('../assets/access.png')"
+          contain
+          height="400"
+        />
+      </v-col>
+
+      <v-col cols="4">
+        <h1 class="display-2 font-weight-bold mb-3">
+          Seddow demands you to join Dreadbomb. before continuing here.
+        </h1>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+
+    <div v-if="this.$parent.$parent.$parent.accessLevel >= 2">
       <v-tabs>
         <v-tab>Timers</v-tab>
+        <v-tab>Elapsed timers</v-tab>
         <v-tab>Tracked structures</v-tab>
         <v-tab-item class="px-2">
           <v-row>
@@ -45,6 +64,53 @@
                 :items="timerItems"
                 :search="searchTimer"
                 :sort-by.sync="timerSort"
+              >
+              <template v-slot:item.system="{ item }">
+                <a :href="getEvemapsUrl(item.region,item.system)" target="_blank">{{item.system}}</a>
+              </template>
+              <template v-slot:item.region="{ item }">
+                <a :href="getEvemapsUrl(item.region)" target="_blank">{{item.region}}</a>
+              </template>
+              <template v-slot:item.type_id="{ item }">
+                <v-img
+                :src="getTypeRender(item.type_id)"
+                max-height="32"
+                max-width="32"
+                ></v-img>
+              </template>
+              <template v-slot:item.countdown="{ item }">
+                <div class="countdown" :target="item.expires"></div>
+              </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+        <v-tab-item class="px-2">
+          <v-row>
+            <v-col cols="4">
+              <h2 class="display-1 font-weight-bold mt-2">
+                Elapsed timers:
+              </h2>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col cols="4">
+              <v-text-field
+              v-model="searchElapsedTimer"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="text-center">
+            <v-col cols="12">
+              <v-data-table
+                :headers="elapsedTimerHeaders"
+                :items="elapsedTimerItems"
+                :search="searchElapsedTimer"
+                :sort-by.sync="timerSort"
+                :sort-desc.sync="elapsedTimerDesc"
               >
               <template v-slot:item.system="{ item }">
                 <a :href="getEvemapsUrl(item.region,item.system)" target="_blank">{{item.system}}</a>
@@ -128,10 +194,13 @@ export default {
     return {
       searchStructure: '',
       searchTimer: '',
+      searchElapsedTimer: '',
       beUrl: process.env.VUE_APP_BE_URL,
       timerSort: 'expires',
+      elapsedTimerDesc: true,
       items: [],
       timerItems: [],
+      elapsedTimerItems: [],
       timerHeaders: [
         {
           text: 'Location ID',
@@ -215,6 +284,41 @@ export default {
           groupable: false,
           align: 'start'
         },*/
+      ],
+      elapsedTimerHeaders: [
+        {
+          text: 'Location ID',
+          value: 'location_id'
+        },
+        {
+          text: 'System',
+          value: 'system'
+        },
+        {
+          text: 'Region',
+          value: 'region'
+        },
+        {
+          text: 'Timer',
+          value: 'timer'
+        },
+        {
+          text: 'Type',
+          value: 'type_id',
+          sortable: false
+        },
+        {
+          text: 'Name',
+          value: 'name'
+        },
+        {
+          text: 'Posted',
+          value: 'posted'
+        },
+        {
+          text: 'Expected at',
+          value: 'expires'
+        }
       ]
     }
   },
@@ -226,6 +330,10 @@ export default {
     axios.get(this.beUrl+'/timers',{withCredentials: true})
     .then((response) => {
       this.timerItems = response.data;
+    })
+    axios.get(this.beUrl+'/elapsedtimers',{withCredentials: true})
+    .then((response) => {
+      this.elapsedTimerItems = response.data;
     })
     setInterval(this.timedUpdate, 1000);
   },

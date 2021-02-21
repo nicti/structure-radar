@@ -6,6 +6,12 @@ const fs = require('fs')
 const express = require('express')
 const bodyParse = require('body-parser')
 
+const axios = require('axios');
+
+const esi = axios.create({
+    baseURL: 'https://esi.evetech.net',
+});
+
 const cors = require('cors')
 const cookieSession = require('cookie-session')
 const cookieParser = require('cookie-parser')
@@ -38,16 +44,42 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
+async function getAccessLevel(id) {
+    let accessLevel = 0;
+    if (id !== 'false') {
+        accessLevel = 1;
+    } else if (id === 'false') {
+        return 0;
+    }
+    let char = await esi.get('/v4/characters/'+id+'/');
+    let corpId = char.data.corporation_id;
+    if (typeof corpId !== "undefined") {
+        corpId = corpId.toString();
+    } else {
+        corpId = null;
+    }
+    let alliId = char.data.alliance_id;
+    if (typeof alliId !== "undefined") {
+        alliId = alliId.toString();
+    } else {
+        alliId = null;
+    }
+    if (process.env.VIEW_CHAR.split(',').includes(id.toString()) ||
+        process.env.VIEW_CORP.split(',').includes(corpId) ||
+        process.env.VIEW_ALLI.split(',').includes(alliId)) {
+        accessLevel = 2;
+    }
+    if (process.env.ALLOWED.split(',').includes(id)) {
+        accessLevel = 3;
+    }
+    return accessLevel;
+}
+
 const authenticationCheck = (req, res, next) => {
     if (!req.user) {
         res.status(401).json({
             authenticated: false,
             message: 'Not authenticated'
-        })
-    } else if(!process.env.ALLOWED.split(',').includes(req.user.id.toString())) {
-        res.status(401).json({
-            authenticated: false,
-            message: 'Unauthorized'
         })
     } else next()
 }
@@ -75,6 +107,11 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
   }))
 
   app.get('/structures',authenticationCheck, async (req, res) => {
+    let user = req.user.id;
+    if (await getAccessLevel(user) < 2) {
+        res.status(403).send();
+        return;
+    }
       let result = []
       let structures = await models.structure.findAll();
       for (let i = 0; i < structures.length; i++) {
@@ -102,6 +139,11 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
   })
 
   app.post('/character/:id/spy',authenticationCheck, async (req, res) => {
+    let user = req.user.id;
+    if (await getAccessLevel(user) < 3) {
+        res.status(403).send();
+        return;
+    }
       id = req.params.id;
       let char = await models.character.findOne({where: {
           userId: req.user.id,
@@ -112,15 +154,20 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
       res.status(200).send();
   })
 
-  app.get('/timers',authenticationCheck, async (req, res) => {
-      let result = [];
+  app.get('/elapsedtimers', authenticationCheck, async (req, res) => {
+    let user = req.user.id;
+    if (await getAccessLevel(user) < 2) {
+        res.status(403).send();
+        return;
+    }
+    let result = [];
       let timers = await models.timer.findAll();
       for (let i = 0; i < timers.length; i++) {
           const timer = timers[i];
           let timerExpires = new Date(timer.expires_at+' UTC');
           let date = new Date();
-          date.setUTCDate(date.getUTCDate()-2);
-          if (timerExpires.getTime() <= date.getTime()) {
+          date.setUTCDate(date.getUTCDate()-1);
+          if (timerExpires.getTime() > date.getTime()) {
               continue;
           }
           result.push({
@@ -135,10 +182,44 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
           });
       }
       res.status(200).json(result);
+  })
+
+  app.get('/timers',authenticationCheck, async (req, res) => {
+    let user = req.user.id;
+    if (await getAccessLevel(user) < 2) {
+        res.status(403).send();
+        return;
+    }
+    let result = [];
+    let timers = await models.timer.findAll();
+    for (let i = 0; i < timers.length; i++) {
+        const timer = timers[i];
+        let timerExpires = new Date(timer.expires_at+' UTC');
+        let date = new Date();
+        date.setUTCDate(date.getUTCDate()-1);
+        if (timerExpires.getTime() <= date.getTime()) {
+            continue;
+        }
+        result.push({
+            location_id: timer.location_id,
+            name: timer.location_name,
+            type_id: timer.type_id,
+            system: timer.system,
+            region: timer.region,
+            timer: timer.timer,
+            posted: timer.posted_at,
+            expires: timer.expires_at
+        });
+    }
+    res.status(200).json(result);
   });
 
   app.get('/characters',authenticationCheck, async (req, res) => {
       let user = req.user.id;
+      if (await getAccessLevel(user) < 3) {
+          res.status(403).send();
+          return;
+      }
       let characters = await models.character.findAll({
           where: {
               userId: user.toString()
@@ -154,6 +235,12 @@ app.get('/auth/callback', passport.authenticate('eveOnline',
           })
       }
       res.status(200).json(list);
+  })
+  
+  app.get('/allowed/:id', authenticationCheck, async (req, res) => {
+    let id = req.params.id;
+    let accessLevel = await getAccessLevel(id);
+    res.status(200).json({level: accessLevel});
   })
 
 const checkDatabaseConnection = async () => {
