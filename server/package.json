@@ -12,7 +12,8 @@
     "passport": "^0.4.1",
     "passport-eve-oauth2": "^1.0.3",
     "sequelize": "^6.3.5",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "yargs": "^16.2.0"
   },
   "scripts": {
     "start": "node index.js",
@@ -20,6 +21,7 @@
     "cron-assets": "node cron/assets.js",
     "cron-locations": "node cron/locations.js",
     "cron-notifications": "node cron/notifications.js",
-    "discord": "node discord/bot.js"
+    "discord": "node discord/bot.js",
+    "message": "node message.js"
   }
 }
