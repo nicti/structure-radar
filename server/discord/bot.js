@@ -187,6 +187,7 @@ client.on('message',async (message) => {
     //Request is pointing at this bot
     let characters;
     if (message.content.startsWith('<@!'+client.user.id+'> ')) {
+        let notifyRole = message.guild.roles.cache.find(role => role.name === dotenv.MENTION_ROLE);
         let fullCommand = message.content.replace('<@!'+client.user.id+'> ','');
         let command = fullCommand.split(' ')[0];
         switch (command) {
@@ -238,6 +239,16 @@ client.on('message',async (message) => {
                     message.channel.send('No structures found for `'+search+'`');
                 }
                 message.channel.stopTyping();
+                break;
+
+            case 'notify':
+                if (message.member.roles.cache.has(notifyRole.id)) {
+                    message.member.roles.remove(notifyRole).catch(console.error);
+                    message.channel.send('<@'+message.author.id+'> has been removed from the mention role.');
+                } else {
+                    message.member.roles.add(notifyRole).catch(console.error);
+                    message.channel.send('<@'+message.author.id+'> has been added to the mention role.');
+                }
                 break;
             default:
                 break;
