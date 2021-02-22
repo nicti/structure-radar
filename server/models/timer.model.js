@@ -40,7 +40,7 @@ module.exports = (sequelize) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
-        is_force_expired: {
+        is_force_elapsed: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         }
