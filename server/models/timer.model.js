@@ -31,6 +31,18 @@ module.exports = (sequelize) => {
         },
         expires_at: {
             type: DataTypes.STRING
+        },
+        is_notified_60: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        is_notified_0: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        is_force_expired: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     })
 }

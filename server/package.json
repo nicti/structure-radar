@@ -23,6 +23,7 @@
     "cron-notifications": "node cron/notifications.js",
     "discord": "node discord/bot.js",
     "discord-watch": "nodemon discord/bot.js",
-    "message": "node message.js"
+    "message": "node message.js",
+    "timers": "node cron/timers.js"
   }
 }
