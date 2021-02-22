@@ -220,7 +220,7 @@ async function process() {
                     }
                     for (let z = 0; z < reportChannels.length; z++) {
                         const reportChannel = reportChannels[z];
-                        await reportChannel.channel.send({content: '<@&'+reportChannel.notify.id+'> New event detected by ['+charName+']:', embed: embed});
+                        await reportChannel.channel.send({content: '<@&'+reportChannel.notify.id+'>\nNew event detected by ['+charName+']:', embed: embed});
                     }
                     break;
 
