@@ -250,7 +250,13 @@ client.on('message',async (message) => {
                     message.channel.send('<@'+message.author.id+'> has been added to the mention role.');
                 }
                 break;
+            case 'help':
             default:
+                message.channel.send('```'+
+                    +'status                  Displays a status report of tracked structures.'
+                    +'search <str> [--owner ] Searchs for structures. Optionally can display owners tags.'
+                    +'notify                  Toggle notfication server group.'
+                    +'```');
                 break;
         }
     }
