@@ -252,9 +252,9 @@ client.on('message',async (message) => {
                 break;
             case 'help':
             default:
-                message.channel.send('```'+
-                    +'status                  Displays a status report of tracked structures.'
-                    +'search <str> [--owner ] Searchs for structures. Optionally can display owners tags.'
+                message.channel.send('```'
+                    +'status                  Displays a status report of tracked structures.\n'
+                    +'search <str> [--owner ] Searchs for structures. Optionally can display owners tags.\n'
                     +'notify                  Toggle notfication server group.'
                     +'```');
                 break;
