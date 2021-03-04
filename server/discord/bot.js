@@ -47,6 +47,7 @@ async function getTicker(id) {
 async function searchStructures(id, access, refresh, search, owner = false) {
     let structureList = {};
     let structures;
+    let character;
     try {
         structures = await esi.get('/v3/characters/'+id+'/search/?categories=structure&search='+search, {
             headers: {
@@ -161,9 +162,10 @@ function transformDbToOutput(structuresByType) {
     let sotiyoCount = getCountById(structuresByType, '35827');
     let athanorCount = getCountById(structuresByType, '35835');
     let tataraCount = getCountById(structuresByType, '35836');
-    let ansiblexCount = getCountById(structuresByType, '35841');
-    let tenebrexCount = getCountById(structuresByType, '37534');
-    let pharoluxCount = getCountById(structuresByType, '35840');
+    //Flex structures cannot be tracked yet via assets
+    //let ansiblexCount = getCountById(structuresByType, '35841');
+    //let tenebrexCount = getCountById(structuresByType, '37534');
+    //let pharoluxCount = getCountById(structuresByType, '35840');
     let draccousCount = getCountById(structuresByType, '47513');
     let horizonCount = getCountById(structuresByType, '47514');
     let marginisCount = getCountById(structuresByType, '47515');
@@ -190,13 +192,14 @@ client.on('message',async (message) => {
         let notifyRole = message.guild.roles.cache.find(role => role.name === dotenv.MENTION_ROLE);
         let fullCommand = message.content.replace('<@!'+client.user.id+'> ','');
         let command = fullCommand.split(' ')[0];
+        let embed;
         switch (command) {
             case 'status':
                 characters = await models.character.findAndCountAll();
                 let structures = await models.structure.findAndCountAll();
                 let structuresByType = (await models.structure.findAndCountAll({group: ['type_id']})).count;
                 let text = transformDbToOutput(structuresByType);
-                let embed = new Discord.MessageEmbed()
+                embed = new Discord.MessageEmbed()
                 .setTitle('Status')
                 .addFields(
                     {name: 'Characters', value: characters.count, inline: true},
@@ -252,11 +255,14 @@ client.on('message',async (message) => {
                 break;
             case 'help':
             default:
-                message.channel.send('```'
-                    +'status                  Displays a status report of tracked structures.\n'
-                    +'search <str> [--owner ] Searchs for structures. Optionally can display owners tags.\n'
-                    +'notify                  Toggle notfication server group.'
-                    +'```');
+                embed = new Discord.MessageEmbed()
+                .setTitle('Commands')
+                .addFields(
+                    {name: 'status', value: 'Displays light summary of tracked structures.'},
+                    {name: 'search <str> [--owner]', value: 'Searches structures by `str` parameter. Optionally can display owner.'},
+                    {name: 'notify', value: 'Toggle notification group for command issuer.'}
+                );
+                message.channel.send(embed);
                 break;
         }
     }
