@@ -11,7 +11,7 @@ if (!message) {
 }
 
 client.on("ready",async () => {
-    const channel = client.channels.cache.find(channel => channel.id == process.env.REPORT_CHANNEL);
+    const channel = client.channels.cache.find(ch => ch.id == process.env.REPORT_CHANNEL);
     await channel.send(message);
     process.exit();
 });

@@ -38,7 +38,7 @@ async function process() {
         return false;
     });
     let zeroTimer = timers.filter((val) => {
-        let timerTime = new Date(val.expires_at);
+        let timerTime = new Date(val.expires_at+' UTC');
         let diff = timerTime - now;
         if (diff < (1000*60) && diff > (1000*60) && !val.is_notified_0) {
             return true;
@@ -64,7 +64,7 @@ async function process() {
                                 date.getUTCDate().toString().padStart(2,'0')+' '+
                                 date.getUTCHours().toString().padStart(2,'0')+':'+
                                 date.getUTCMinutes().toString().padStart(2,'0');
-                embed = new Discord.MessageEmbed()
+                let embed = new Discord.MessageEmbed()
                     .setTitle(element.location_name)
                     .setColor('#aa0000')
                     .setThumbnail('https://images.evetech.net/types/'+element.type_id+'/render?size=256')
@@ -90,7 +90,7 @@ async function process() {
                                 date.getUTCDate().toString().padStart(2,'0')+' '+
                                 date.getUTCHours().toString().padStart(2,'0')+':'+
                                 date.getUTCMinutes().toString().padStart(2,'0');
-                embed = new Discord.MessageEmbed()
+                let embed = new Discord.MessageEmbed()
                     .setTitle(element.location_name)
                     .setColor('#aa0000')
                     .setThumbnail('https://images.evetech.net/types/'+element.type_id+'/render?size=256')
@@ -112,7 +112,6 @@ async function process() {
         });
         client.login(dotenv.BOT_TOKEN);
     }
-    let a = 'b';
 }
 
 process();

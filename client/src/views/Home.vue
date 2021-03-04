@@ -81,6 +81,14 @@
               <template v-slot:item.countdown="{ item }">
                 <div class="countdown" :target="item.expires"></div>
               </template>
+              <template v-slot:item.actions="{ item }">
+                <v-icon
+                  small
+                  @click="deleteItem(item)"
+                >
+                  mdi-arrow-collapse-right
+                </v-icon>
+              </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -239,7 +247,8 @@ export default {
           text: 'Expected in',
           value: 'countdown',
           sortable: false
-        }
+        },
+        {text: 'Actions', value: 'actions', sortable: false}
       ],
       headers: [
         {
